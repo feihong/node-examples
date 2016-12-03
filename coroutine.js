@@ -20,23 +20,21 @@ function getNumber() {
   return new Promise(resolve => setTimeout(resolve, 1000, Math.random()))
 }
 
-function fetchText(url) {
+function fetchStatusCode(url) {
   return new Promise(resolve => {
-    http.get('http://baidu.com', res => {
-      res.on('readable', () => {
-        res.setEncoding('utf8')
-        resolve(res.read())
-      })
+    http.get(url, res => {
+      resolve(res.statusCode)
     })
   })
 }
 
-coroutine(function*() {
+coroutine(function *() {
   console.log('Sleeping for 2 seconds')
   yield sleep(2)
   console.log('Woke up')
-  let num = yield getNumber()
-  console.log('Number:', num)
-  yield sleep(1)
+  console.log('Number:', yield getNumber())
+  // This can actually take quite a bit of time.
+  console.log('Response status code:', yield fetchStatusCode('http://youku.com'))
+  yield sleep(2)
   console.log('Done!')
 })

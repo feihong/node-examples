@@ -1,15 +1,19 @@
 const http = require('http')
 
 function coroutine(fn) {
-  function run(gen, value) {
+  function run(gen, resolve, value) {
     let result = gen.next(value)
-    if (!result.done) {
+    if (result.done) {
+      resolve()
+    } else {
       let promise = result.value
-      promise.then(value => setImmediate(run, gen, value))
+      promise.then(value => setImmediate(run, gen, resolve, value))
     }
   }
-  let gen = fn()
-  run(gen)
+  return new Promise(resolve => {
+    let gen = fn()
+    run(gen, resolve)
+  })
 }
 
 function sleep(secs) {
@@ -29,19 +33,20 @@ function fetchStatusCode(url) {
 }
 
 coroutine(function *() {
-  for (let i=0; i < 6; i++) {
-    console.log(i)
-    yield sleep(1)
-  }
-})
-
-coroutine(function *() {
   console.log('Sleeping for 2 seconds')
   yield sleep(2)
   console.log('Woke up')
   console.log('Number:', yield getNumber())
+
   // This can actually take quite a bit of time.
   console.log('Response status code:', yield fetchStatusCode('http://youku.com'))
-  yield sleep(2)
+
+  console.log('Start counting inside coroutine...')
+  yield coroutine(function *() {
+    for (let i=1; i < 6; i++) {
+      console.log(i)
+      yield sleep(1)
+    }
+  })
   console.log('Done!')
 })

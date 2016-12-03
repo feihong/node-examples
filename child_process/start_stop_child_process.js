@@ -1,6 +1,16 @@
+/*
+
+On Linux, if you do not specify a shell, you will get /bin/sh by default, and
+in that case, sending SIGINT to the child process will NOT cause it to stop.
+
+*/
+
 const {exec} = require('child_process')
 
-proc = exec('python count.py')
+let options = {
+  shell: '/bin/bash'
+}
+proc = exec('python count.py', options)
 console.log(proc.constructor.name)
 
 proc.stdout.pipe(process.stdout)

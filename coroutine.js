@@ -29,6 +29,13 @@ function fetchStatusCode(url) {
 }
 
 coroutine(function *() {
+  for (let i=0; i < 6; i++) {
+    console.log(i)
+    yield sleep(1)
+  }
+})
+
+coroutine(function *() {
   console.log('Sleeping for 2 seconds')
   yield sleep(2)
   console.log('Woke up')

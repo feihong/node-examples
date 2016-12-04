@@ -4,7 +4,7 @@ function coroutine(fn) {
   function run(gen, resolve, value) {
     let result = gen.next(value)
     if (result.done) {
-      resolve()
+      resolve(result.value)
     } else {
       let promise = result.value
       promise.then(value => setImmediate(run, gen, resolve, value))
@@ -42,11 +42,13 @@ coroutine(function *() {
   console.log('Response status code:', yield fetchStatusCode('http://youku.com'))
 
   console.log('Start counting inside coroutine...')
-  yield coroutine(function *() {
+  let result = yield coroutine(function *() {
     for (let i=1; i < 6; i++) {
       console.log(i)
       yield sleep(1)
     }
+    return 424242
   })
+  console.log(`The "return value" from the coroutine was ${result}`)
   console.log('Done!')
 })

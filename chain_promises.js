@@ -1,7 +1,7 @@
 /*
 
-Get the IP address, then sleep for 3 seconds, then get the modified time of
-this file.
+Demonstrate how to chain promises together. Note that it's not necessary for
+each callback to return a Promise object.
 
 */
 
@@ -33,18 +33,30 @@ function getModifiedTime(path) {
   })
 }
 
-let sleep3 = sleep.bind(3)
+// Source: https://www.sitepoint.com/currying-in-functional-javascript/
+function curry(fn) {
+  let parameters = Array.prototype.slice.call(arguments, 1)
+  return function() {
+    return fn.apply(this, parameters.concat(
+      Array.prototype.slice.call(arguments, 0)
+    ))
+  }
+}
 
-getIpAddress().then(text => {
-  console.log(text)
-  return Promise.resolve()
+
+getIpAddress()
+.then(ipAddress => {
+  console.log(`Your IP address is: ${ipAddress}`)
+  console.log("Now it's time to sleep for a while")
+  return sleep(3)
 })
-.then(() => sleep(3))
 .then(() => {
-  console.log('Done sleeping')
-  return Promise.resolve()
+  console.log('Woke up!')
+  return 12345    // not a promise
 })
-.then(() => getModifiedTime('chain_promises.js'))
+.then(num => console.log(`Got a number from the previous promise: ${num}`))
+// You can avoid defining a callback function by using curry.
+.then(curry(getModifiedTime, 'chain_promises.js'))
 .then(mtime => {
-  console.log('Modified time:', mtime)
+  console.log(`This file was last modified at: ${mtime}`)
 })

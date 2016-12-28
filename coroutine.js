@@ -1,20 +1,25 @@
 const http = require('http')
 
-function coroutine(fn) {
-  function run(gen, resolve, value) {
+// Coroutine function that returns a promise that resolves when the coroutine
+// is finished. Accepts a generator function, and assumes that everything
+// yielded from the generator function is a promise.
+function coroutine(generatorFunction) {
+  let gen = generatorFunction()
+  function run(resolve, value) {
     let result = gen.next(value)
     if (result.done) {
+      // Generator is done, so handle its return value.
       resolve(result.value)
     } else {
+      // Generator is not done, so result.value is a promise.
       let promise = result.value
-      promise.then(value => setImmediate(run, gen, resolve, value))
+      // When the promise is done, run this function again.
+      promise.then(value => run(resolve, value))
     }
   }
-  return new Promise(resolve => {
-    let gen = fn()
-    run(gen, resolve)
-  })
+  return new Promise(resolve => run(resolve, undefined))
 }
+
 
 function sleep(secs) {
   return new Promise(resolve => setTimeout(resolve, secs * 1000))
@@ -38,7 +43,7 @@ coroutine(function *() {
   console.log('Woke up')
   console.log('Number:', yield getNumber())
 
-  // This can actually take quite a bit of time.
+  // This can actually take quite a bit of time. Should yield 302.
   console.log('Response status code:', yield fetchStatusCode('http://youku.com'))
 
   console.log('Start counting inside coroutine...')

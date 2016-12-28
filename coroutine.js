@@ -5,20 +5,24 @@ const http = require('http')
 // yielded from the generator function is a promise.
 function coroutine(generatorFunction) {
   let gen = generatorFunction()
-  function run(resolve, value) {
-    let result = gen.next(value)
-    if (result.done) {
-      // Generator is done, so handle its return value.
-      resolve(result.value)
-    } else {
-      // Generator is not done, so result.value is a promise.
-      let promise = result.value
-      // When the promise is done, run this function again.
-      promise.then(value => run(resolve, value))
+  return new Promise(resolve => {
+    // Handle every single value yielded by the generator function.
+    function step(value) {
+      let result = gen.next(value)
+      if (result.done) {
+        // Generator is done, so handle its return value.
+        resolve(result.value)
+      } else {
+        // Generator is not done, so result.value is a promise.
+        let promise = result.value
+        // When the promise is done, run this function again.
+        promise.then(newValue => step(newValue))
+      }
     }
-  }
-  return new Promise(resolve => run(resolve, undefined))
+    step(undefined)
+  })
 }
+
 
 
 function sleep(secs) {

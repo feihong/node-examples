@@ -18,6 +18,9 @@ module.exports = function coroutine(generatorFunction) {
         promise.then(newValue => {
           let newResult = gen.next(newValue)
           next(newResult)
+        }, error => {
+          let newResult = gen.throw(error)
+          next(newResult)
         })
       }
     }

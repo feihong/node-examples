@@ -6,6 +6,8 @@ let params = {
   client_id,
   client_secret,
   v: '20161230',
+  sortByDistance: 1,
+  query: 'movie theater',
   ll: '41.967985,-87.688307',
 }
 let url = 'https://api.foursquare.com/v2/venues/search?' + qs.stringify(params)

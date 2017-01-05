@@ -1,4 +1,5 @@
-require('isomorphic-fetch')
+const fs = require('fs')
+const axios = require('axios')
 const moment = require('moment')
 const qs = require('querystring')
 const baseUrl = 'http://data.tmsapi.com/v1.1/movies'
@@ -14,13 +15,9 @@ function getShowings(lat, lng) {
   }
   let url = baseUrl + '/showings?' + qs.stringify(params)
   console.log(url)
-  return fetch(url)
-  .then(res => {
-    if (res.status == 200) {
-      return res.json()
-    } else {
-      return Promise.reject(`Received status code ${res.status}: ${res.headers.get('x-error-detail-header')}`)
-    }
+  return axios.get(url).then(res => {
+      fs.writeFile('response.json', JSON.stringify(res.data, null, 2), () => null)
+      return res.data
   })
 }
 
@@ -31,13 +28,11 @@ function getTheaters(zip) {
   }
   let url = baseUrl + '/theatres?' + qs.stringify(params)
   console.log(url)
-  return fetch(url)
-  .then(res => {
-    if (res.status == 200) {
-      return res.json()
-    } else {
-      return Promise.reject(`Received status code ${res.status}: ${res.headers.get('x-error-detail-header')}`)
-    }
+  return axios.get(url)
+  .then(res => res.data)
+  .catch(err => {
+    let res = err.response
+    return Promise.reject(`Received status code ${res.status} (${res.statusText}): ${res.headers['x-error-detail-header']}`)
   })
 }
 
@@ -47,12 +42,12 @@ function getTheaters(zip) {
 // .catch(err => console.log(err))
 
 getShowings(41.967985, -87.688307)
-.then(data => {
+.then(movies => {
   // console.log(data))
-  for (let movie of data) {
+  for (let movie of movies) {
     console.log(movie.title)
     console.log(movie.releaseYear)
-    console.log(movie.genres.join(', '))
+    console.log(movie.genres ? movie.genres.join(', ') : 'N/A')
     console.log('=============')
   }
 })

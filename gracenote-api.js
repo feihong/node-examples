@@ -1,7 +1,6 @@
 const fs = require('fs')
 const axios = require('axios')
 const moment = require('moment')
-const qs = require('querystring')
 const baseUrl = 'http://data.tmsapi.com/v1.1/movies'
 const api_key = process.env.GRACENOTE_API_KEY
 
@@ -13,9 +12,8 @@ function getShowings(lat, lng) {
     lng,
     api_key
   }
-  let url = baseUrl + '/showings?' + qs.stringify(params)
-  console.log(url)
-  return axios.get(url).then(res => {
+  let url = baseUrl + '/showings'
+  return axios.get(url, {params}).then(res => {
       fs.writeFile('response.json', JSON.stringify(res.data, null, 2), () => null)
       return res.data
   })
@@ -26,9 +24,8 @@ function getTheaters(zip) {
     zip,
     api_key
   }
-  let url = baseUrl + '/theatres?' + qs.stringify(params)
-  console.log(url)
-  return axios.get(url)
+  let url = baseUrl + '/theatres'
+  return axios.get(url, {params})
   .then(res => res.data)
   .catch(err => {
     let res = err.response

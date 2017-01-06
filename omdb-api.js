@@ -1,5 +1,4 @@
-require('isomorphic-fetch')
-const qs = require('querystring')
+const axios = require('axios')
 
 // let params = {
 //   t: 'la la land',
@@ -12,16 +11,16 @@ let params = {
   tomatoes: 'true',
   y: '2016',    // if not specified, will pick the 2008 movie
 }
-let url = 'http://www.omdbapi.com/?' + qs.stringify(params)
+let url = 'http://www.omdbapi.com/'
 
-fetch(url)
-.then(res => res.json())
-.then(data => {
+axios.get(url, {params})
+.then(res => res.data)
+.then(movie => {
   // console.log(data)
-  console.log(data.Title)
-  console.log(data.Year)
-  console.log('Directed by', data.Director)
-  console.log('Metascore:', data.Metascore)
-  console.log('IMDB rating:', data.imdbRating)
-  console.log('Tomato rating:', data.tomatoRating)
+  console.log(movie.Title)
+  console.log(movie.Year)
+  console.log('Directed by', movie.Director)
+  console.log('Metascore:', movie.Metascore)
+  console.log('IMDB rating:', movie.imdbRating)
+  console.log('Tomato rating:', movie.tomatoRating)
 })

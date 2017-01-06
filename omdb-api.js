@@ -3,14 +3,15 @@ const axios = require('axios')
 let params = {
   type: 'movie',
   tomatoes: 'true',
-  title: 'la la land',
-  year: '2016'
+  plot: 'short',
+  t: 'la la land',
+  y: '2016',
 }
-// params = Object.assign({title: 'jackie', year: '2016'}, params)
+params = Object.assign(params, {t: 'silence', y: '2016'})
 // If year is not specified, will pick the 2008 movie.
-// params = Object.assign({title: 'passengers', year: '2016'}, params)
+// params = Object.assign(params, {t: 'passengers', y: '2016'})
 
-let url = 'http://omdbapi.com/'
+let url = 'http://www.omdbapi.com/'
 
 axios.get(url, {params})
 .then(res => {
@@ -25,6 +26,7 @@ axios.get(url, {params})
   console.log(movie.Title)
   console.log(movie.Year)
   console.log('Directed by', movie.Director)
+  console.log('Poster:', movie.Poster)
   console.log('Metascore:', movie.Metascore)
   console.log('IMDB rating:', movie.imdbRating)
   console.log('Tomato rating:', movie.tomatoRating)

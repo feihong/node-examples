@@ -13,10 +13,7 @@ function getShowings(lat, lng) {
     api_key
   }
   let url = baseUrl + '/showings'
-  return axios.get(url, {params}).then(res => {
-      fs.writeFile('response.json', JSON.stringify(res.data, null, 2), () => null)
-      return res.data
-  })
+  return axios.get(url, {params}).then(res => res.data)
 }
 
 function getTheaters(zip) {
@@ -40,6 +37,8 @@ function getTheaters(zip) {
 
 getShowings(41.967985, -87.688307)
 .then(movies => {
+  fs.writeFile('response.json', JSON.stringify(movies, null, 2), () => null)
+
   // console.log(data))
   for (let movie of movies) {
     console.log(movie.title)

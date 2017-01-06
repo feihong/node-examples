@@ -11,11 +11,11 @@ let params = {
   tomatoes: 'true',
   y: '2016',    // if not specified, will pick the 2008 movie
 }
-let url = 'http://www.omdbapi.com/'
+let url = 'http://omdbapi.com/'
 
 axios.get(url, {params})
-.then(res => res.data)
-.then(movie => {
+.then(res => {
+  let movie = res.data
   // console.log(data)
   console.log(movie.Title)
   console.log(movie.Year)

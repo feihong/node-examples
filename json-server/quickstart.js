@@ -1,5 +1,6 @@
 const pathlib = require('path')
 const jsonServer = require('json-server')
+const Koa = require('koa')
 
 const server = jsonServer.create()
 const router = jsonServer.router(pathlib.join(__dirname, 'db.json'))
@@ -14,6 +15,15 @@ server.get('/hello/', (req, res) => {
   res.send('Hello there!')
 })
 
+// Add Koa middleware before json-server router.
+const koa = new Koa()
+koa.use(async (ctx, next) => {
+  console.log(`Inside Koa: ${ctx.url}`)
+  ctx.body = 'Hello from Koa'
+})
+server.use('/koa', koa.callback())
+
+// Serve the APIs, e.g. /api/posts/1.
 server.use('/api', router)
 
 

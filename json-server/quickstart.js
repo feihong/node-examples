@@ -8,23 +8,24 @@ const middlewares = jsonServer.defaults()
 
 const port = 8000
 
-server.use(middlewares)
+// Don't load middlewares unless you want that friendly JSON Server intro page.
+// server.use(middlewares)
 
 // Add custom route before json-server router.
 server.get('/hello/', (req, res) => {
   res.send('Hello there!')
 })
 
-// Add Koa middleware before json-server router.
+// Serve the APIs, e.g. /api/posts/1.
+server.use('/api', router)
+
+// Koa middleware serves all other routes.
 const koa = new Koa()
 koa.use(async (ctx, next) => {
   console.log(`Inside Koa: ${ctx.url}`)
-  ctx.body = 'Hello from Koa'
+  ctx.body = `<h1>Hello from Koa</h1> Path: <code>${ctx.url}</code>`
 })
-server.use('/koa', koa.callback())
-
-// Serve the APIs, e.g. /api/posts/1.
-server.use('/api', router)
+server.use(koa.callback())
 
 
 server.listen(port, () => {

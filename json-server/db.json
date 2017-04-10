@@ -1,7 +1,7 @@
 {
   "posts": [
     { "id": 1, "title": "json-server", "author": "gmock" },
-    { "id": 1, "title": "koa is good", "author": "gmock" }
+    { "id": 2, "title": "koa is good", "author": "gmock" }
   ],
   "comments": [
     { "id": 1, "body": "some comment", "postId": 1 },
